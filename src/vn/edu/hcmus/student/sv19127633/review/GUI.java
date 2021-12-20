@@ -39,6 +39,7 @@ public class GUI extends JFrame implements ActionListener {
     //funnyQuestCard
     JLabel question;
     JRadioButton ans1,ans2,ans3,ans4;
+    String result="";
     ButtonGroup group;
     long start = 0;
     long end = 0;
@@ -225,18 +226,26 @@ public class GUI extends JFrame implements ActionListener {
         quest_frame.add(question);
 
         ans1=new JRadioButton();
+        ans1.addActionListener(this::actionPerformed);
+        ans1.setActionCommand("ans1");
         ans1.setBorder(new EmptyBorder(10,10,10,10));
         ans_frame.add(ans1);
 
         ans2=new JRadioButton();
+        ans2.addActionListener(this::actionPerformed);
+        ans2.setActionCommand("ans2");
         ans2.setBorder(new EmptyBorder(10,10,10,10));
         ans_frame.add(ans2);
 
         ans3=new JRadioButton();
+        ans3.addActionListener(this::actionPerformed);
+        ans3.setActionCommand("ans3");
         ans3.setBorder(new EmptyBorder(10,10,10,10));
         ans_frame.add(ans3);
 
         ans4=new JRadioButton();
+        ans4.addActionListener(this::actionPerformed);
+        ans4.setActionCommand("ans4");
         ans4.setBorder(new EmptyBorder(10,10,10,10));
         ans_frame.add(ans4);
 
@@ -312,21 +321,22 @@ public class GUI extends JFrame implements ActionListener {
 
             if (e.getActionCommand()=="quest1_func") {
                 strings = map.funnyQuestion1();
+                result=map.getMap().get(strings.get(4));
                 quest=String.format("Đâu là nghĩa của slang %s ?",strings.get(4));
             }
             else if (e.getActionCommand()=="quest2_func") {
                 strings = map.funnyQuestion2();
+                result=map.getRevMap().get(strings.get(4));
                 quest=String.format("Đâu là slang của def %s ?",strings.get(4));
             }
 
-            if (start==0) {
+
                 start=System.currentTimeMillis();
                 question.setText(quest);
                 ans1.setText(strings.get(0));
                 ans2.setText(strings.get(1));
                 ans3.setText(strings.get(2));
                 ans4.setText(strings.get(3));
-            }
 
         }
 
@@ -457,6 +467,69 @@ public class GUI extends JFrame implements ActionListener {
                 ex.printStackTrace();
             }
         }
+
+
+        else if (e.getActionCommand().equals("ans1"))
+        {
+            System.out.println(result);
+            if(!ans1.getText().equals(result))
+            {
+                JOptionPane.showMessageDialog(null,
+                        "Sai rỒi",
+                        "Thật tiếc",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null,"Đáp án chính xác","Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+        else if (e.getActionCommand().equals("ans2"))
+        {
+            if(!ans2.getText().equals(result))
+            {
+                JOptionPane.showMessageDialog(null,
+                        "Sai rỒi",
+                        "Thật tiếc",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null,"Đáp án chính xác","Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+        else if (e.getActionCommand().equals("ans3"))
+        {
+            if(!ans3.getText().equals(result))
+            {
+                JOptionPane.showMessageDialog(null,
+                        "Sai rỒi",
+                        "Thật tiếc",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null,"Đáp án chính xác","Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+        else if (e.getActionCommand().equals("ans4"))
+        {
+            if(!ans4.getText().equals(result))
+            {
+                JOptionPane.showMessageDialog(null,
+                        "Sai rỒi",
+                        "Thật tiếc",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null,"Đáp án chính xác","Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
 
 
 
