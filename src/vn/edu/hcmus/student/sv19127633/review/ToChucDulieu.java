@@ -148,9 +148,9 @@ public class ToChucDulieu {
         if (map.containsKey(slang)) //Exist
             return "Duplicate";
         else {
-            history.add(slang);
             map.put(slang, def);
             revMap.put(def,slang);
+            history.add(slang);
         }
         return "Successful";
     }
@@ -162,14 +162,13 @@ public class ToChucDulieu {
         {
             map.remove(oldSlang);
             map.put(newSlang,newDef);
+            revMap.remove(map.get(oldSlang));
             revMap.put(newDef,newSlang);
             history.add(newSlang);
             return true;
         }
         else //Not exist
-        {
             return false;
-        }
     }
 
     public  Boolean deleteSlang(String slang)
@@ -184,9 +183,7 @@ public class ToChucDulieu {
             return true;
         }
         else //not exist
-        {
             return false;
-        }
     }
 
     public String randSlang()
