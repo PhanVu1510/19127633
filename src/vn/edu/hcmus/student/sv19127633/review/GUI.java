@@ -20,12 +20,21 @@ public class GUI extends JFrame implements ActionListener {
     JRadioButton byDef;
 
     //Main Components
+    CardLayout c=new CardLayout();
     JPanel mainFrame;
+    JPanel searchCard;
+    JPanel addCard;
 
+    //searchCard
     String[] columnNames = {"Slang", "Nghĩa"};
     String [][] data={{"Empty","Empty"}};
     DefaultTableModel model = new DefaultTableModel(data, columnNames);
     JTable table=new JTable();
+
+    //addCard
+    JTextField slang_field;
+    JTextField def_field;
+    JButton add_new_btn;
 
     public GUI() throws IOException {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -37,6 +46,7 @@ public class GUI extends JFrame implements ActionListener {
 
         createSearchFrame();
         createMainFrame();
+        createFuncFrame();
         this.pack();
     }
 
@@ -75,14 +85,39 @@ public class GUI extends JFrame implements ActionListener {
         rdGroup.add(byDef);
     }
 
+    public void createFuncFrame()
+    {
+        //Switch function Card
+        JPanel funcFrame=new JPanel();
+        funcFrame.setLayout(new GridLayout(2,1));
+        pane.add(funcFrame,BorderLayout.LINE_END);
+
+        JButton search_func_btn=new JButton("Tìm kiếm");
+        ///search_func_btn.setPreferredSize();
+        search_func_btn.setActionCommand("search_func");
+        search_func_btn.addActionListener(this::actionPerformed);
+        funcFrame.add(search_func_btn);
+
+        JButton add_func_btn=new JButton("Thêm slang");
+        add_func_btn.setActionCommand("add_func");
+        add_func_btn.addActionListener(this::actionPerformed);
+        funcFrame.add(add_func_btn);
+    }
+
     public void createMainFrame()
     {
         mainFrame=new JPanel();
-        mainFrame.setLayout(new CardLayout());
+        mainFrame.setLayout(c);
+        mainFrame.setBorder(new EmptyBorder(20,20,20,20));
 
+        createSearchCard();
+        createAddCard();
+    }
 
-        JPanel searchCard=new JPanel();
-        searchCard.setBorder(new EmptyBorder(20,20,20,20));
+    public void createSearchCard()
+    {
+        searchCard=new JPanel();
+        searchCard.setBorder(new EmptyBorder(5,5,5,5));
         searchCard.setLayout(new BoxLayout(searchCard,BoxLayout.Y_AXIS));
 
         JLabel result=new JLabel("Kết quả");
@@ -95,11 +130,49 @@ public class GUI extends JFrame implements ActionListener {
         table.getColumnModel().getColumn(1).setPreferredWidth(250);
         searchCard.add(table);
 
-        mainFrame.add(searchCard);
+        mainFrame.add(searchCard,"search");
         pane.add(mainFrame,BorderLayout.CENTER);
+    }
 
+    public void createAddCard()
+    {
+        addCard=new JPanel();
+        addCard.setBorder(new EmptyBorder(5,5,5,5));
+        addCard.setLayout(new BoxLayout(addCard,BoxLayout.Y_AXIS));
+        mainFrame.add(addCard,"add");
+
+        JPanel new_slang_frame=new JPanel();
+        new_slang_frame.setLayout(new FlowLayout());
+        addCard.add(new_slang_frame);
+
+        JLabel slang_lb=new JLabel("Slang");
+        new_slang_frame.add(slang_lb);
+        slang_field=new JTextField();
+        slang_field.setPreferredSize(new Dimension(100,20));
+        new_slang_frame.add(slang_field);
+
+        JPanel new_def_frame=new JPanel();
+        new_def_frame.setLayout(new FlowLayout());
+        addCard.add(new_def_frame);
+
+        JLabel def_lb=new JLabel("Nghĩa");
+        new_def_frame.add(def_lb);
+        def_field=new JTextField();
+        def_field.setPreferredSize(new Dimension(100,20));
+        new_def_frame.add(def_field);
+
+        JPanel add_new_frame=new JPanel();
+        add_new_frame.setLayout(new FlowLayout(FlowLayout.CENTER));
+        addCard.add(add_new_frame);
+
+        add_new_btn=new JButton("Xác nhận");
+        add_new_btn.addActionListener(this::actionPerformed);
+        add_new_btn.setActionCommand("add");
+        add_new_frame.add((add_new_btn));
 
     }
+
+
 
     public void clearTable()
     {
@@ -145,6 +218,56 @@ public class GUI extends JFrame implements ActionListener {
                 else
                     model.addRow(new String[]{"Empty","Empty"});
             }
+        }
+        else if (e.getActionCommand().equals("search_func"))
+        {
+            c.show(mainFrame,"search");
+        }
+
+        else if (e.getActionCommand()=="add_func")
+        {
+            c.show(mainFrame,"add");
+            //map.addSlang()
+        }
+
+        else if(e.getActionCommand().equals("add"))
+        {
+            String new_slang=slang_field.getText();
+            String new_def=def_field.getText();
+
+            if (new_slang.equals("") || def_field.equals("")) {
+                JOptionPane.showMessageDialog(null,
+                        "Vui lòng điền đầy đủ các thông tin",
+                        "Nhắc nhở",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String res=map.addSlang(new_slang,new_def);
+            if (res.equals("Duplicate"))
+            {
+                System.out.println("Duplicate");
+                int res2 = JOptionPane.showConfirmDialog(null, "Từ vựng đã tồn tại\nBạn có muốn thêm vào vào dưới dạng duplcate không ?", "Nhắc nhở",
+                        JOptionPane.YES_NO_OPTION);
+                if(res2==0)
+                {
+                    int i=1;
+                    while (true)
+                    {
+                        if (!map.getMap().containsKey(new_slang+" ("+i+")")) {
+                            new_slang=new_slang+" ("+i+")";
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                else return;
+            }
+            map.addSlang(new_slang,new_def);
+            String msg=String.format("Thêm %s thành công",new_slang);
+            JOptionPane.showMessageDialog(null, msg,"Thành công", JOptionPane.INFORMATION_MESSAGE);
+            slang_field.setText("");
+            def_field.setText("");
         }
     }
 }

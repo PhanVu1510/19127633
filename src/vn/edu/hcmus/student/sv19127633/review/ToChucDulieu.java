@@ -143,22 +143,16 @@ public class ToChucDulieu {
         return list;
     }
 
-    public Boolean addSlang(String slang,String def)
+    public String addSlang(String slang,String def)
     {
-        //check empty
         if (map.containsKey(slang)) //Exist
-        {
-          //confirm
-            System.out.println("Duplicate");
-            return false;
-        }
+            return "Duplicate";
         else {
             history.add(slang);
             map.put(slang, def);
             revMap.put(def,slang);
         }
-
-        return true;
+        return "Successful";
     }
 
     public Boolean editSlang(String oldSlang,String newSlang,String newDef)
