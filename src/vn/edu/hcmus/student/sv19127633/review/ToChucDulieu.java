@@ -10,17 +10,11 @@ public class ToChucDulieu {
     private HashMap<String, String> revMap=new HashMap<>();
     private ArrayList<String> history=new ArrayList<>();
 
-
-    public ToChucDulieu(String filename, boolean gen) throws IOException {
-        if (gen) {
-            generate(filename);
-        }
-/*        else {
-            //generate(n);
-            save(filename);
-        }*/
-        //show(true);
-
+    public ToChucDulieu() throws IOException {
+        boolean check=generate("latest_slang.txt");
+        System.out.println(check);
+        if (check == false)
+            generate("slang.txt");
     }
 
     public HashMap<String,String> getMap()
@@ -33,47 +27,58 @@ public class ToChucDulieu {
         return revMap;
     }
 
-    public void generate(String filename) throws IOException {
-        try
-        {
-            BufferedReader in =new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
+    public boolean generate(String filename) throws IOException {
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
             in.readLine();
 
-            String keyOld ="";
-            String valueOld="";
+            String keyOld = "";
+            String valueOld = "";
 
-            String line=in.readLine();
-            String [] buffer=null;
+            String line = in.readLine();
+            String[] buffer = null;
 
-            while (line != null)
-            {
-                buffer=line.split("`");
-                if (buffer.length==2)
-                {
-                    map.put(buffer[0],buffer[1]);
+            while (line != null) {
+                buffer = line.split("`");
+                if (buffer.length == 2) {
+                    map.put(buffer[0], buffer[1]);
 
-                    if(valueOld!="")
-                        revMap.put(valueOld,keyOld);
-                    valueOld=buffer[1];
+                    if (valueOld != "")
+                        revMap.put(valueOld, keyOld);
+                    valueOld = buffer[1];
+                } else {
+                    String temp = map.get(keyOld);
+                    map.replace(keyOld, temp, temp + "| " + buffer[0]);
+
+                    valueOld += buffer[0];
                 }
-                else
-                {
-                    String temp=map.get(keyOld);
-                    map.replace(keyOld,temp,temp+"| "+buffer[0]);
-
-                    valueOld+=buffer[0];
-                }
-                keyOld=buffer[0];
-                line=in.readLine();
+                keyOld = buffer[0];
+                line = in.readLine();
 
             }
-            revMap.put(valueOld,keyOld);
+            revMap.put(valueOld, keyOld);
+            in.close();
+            return true;
 
-        } catch (IOException e)
-        {
-            System.out.println("Khong ton tai file du lieu");
+        } catch (IOException e) {
+            return false;
         }
+    }
 
+    public void save(String filename) throws IOException {
+        BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename)));
+
+        Set<String> keys = map.keySet();
+
+        keys.forEach((key) ->
+        {
+            try {
+                out.write(key+"`"+map.get(key)+"\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        out.close();
     }
 
     public void show(boolean rev)
@@ -96,20 +101,6 @@ public class ToChucDulieu {
             });
         }
     }
-    public void save(String filename) throws IOException {
-        BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename)));
-        Set <String> keys=map.keySet();
-        keys.forEach((key) ->
-        {
-            try {
-                out.write(key+"\n");
-            } catch (IOException e) {
-                System.out.println(e);
-            }
-        });
-        out.close();
-    }
-
     public String findDef(String slang)
     {
         history.add(slang);
@@ -143,20 +134,19 @@ public class ToChucDulieu {
         return list;
     }
 
-    public String addSlang(String slang,String def)
-    {
+    public String addSlang(String slang,String def) throws IOException {
         if (map.containsKey(slang)) //Exist
             return "Duplicate";
         else {
             map.put(slang, def);
             revMap.put(def,slang);
             history.add(slang);
+            save("latest_slang.txt");
         }
         return "Successful";
     }
 
-    public Boolean editSlang(String oldSlang,String newSlang,String newDef)
-    {
+    public Boolean editSlang(String oldSlang,String newSlang,String newDef) throws IOException {
         //check empty
         if(map.containsKey(oldSlang))
         {
@@ -165,14 +155,14 @@ public class ToChucDulieu {
             revMap.remove(map.get(oldSlang));
             revMap.put(newDef,newSlang);
             history.add(newSlang);
+            save("latest_slang.txt");
             return true;
         }
         else //Not exist
             return false;
     }
 
-    public  Boolean deleteSlang(String slang)
-    {
+    public  Boolean deleteSlang(String slang) throws IOException {
         //check empty
         if(map.containsKey(slang)) //exist
         {
@@ -180,10 +170,17 @@ public class ToChucDulieu {
             map.remove(slang);
             revMap.remove(map.get(slang));
             history.add(slang);
+            save("latest_slang.txt");
             return true;
         }
         else //not exist
             return false;
+    }
+
+    public void reset() throws IOException {
+        map.clear();
+        generate("slang.txt");
+        save("latest_slang.txt");
     }
 
     public String randSlang()
@@ -259,11 +256,5 @@ public class ToChucDulieu {
         strings.add(map.get(slang));
         return strings;
     }
-
-
-
-
-
-
 
 }

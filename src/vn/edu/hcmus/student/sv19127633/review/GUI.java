@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class GUI extends JFrame implements ActionListener {
-    ToChucDulieu map=new ToChucDulieu("slang.txt",true);
+    ToChucDulieu map=new ToChucDulieu();
 
     Container pane;
 
@@ -35,6 +35,13 @@ public class GUI extends JFrame implements ActionListener {
     JTextField slang_field;
     JTextField def_field;
     JButton add_btn, edit_btn,del_btn;
+
+    //funnyQuestCard
+    JLabel question;
+    JRadioButton ans1,ans2,ans3,ans4;
+    ButtonGroup group;
+    long start = 0;
+    long end = 0;
 
     public GUI() throws IOException {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -89,7 +96,7 @@ public class GUI extends JFrame implements ActionListener {
     {
         //Switch function Card
         JPanel funcFrame=new JPanel();
-        funcFrame.setLayout(new GridLayout(2,1));
+        funcFrame.setLayout(new GridLayout(5,1));
         pane.add(funcFrame,BorderLayout.LINE_END);
 
         JButton search_func_btn=new JButton("Tìm kiếm");
@@ -102,6 +109,22 @@ public class GUI extends JFrame implements ActionListener {
         add_func_btn.setActionCommand("add_edit_del_func");
         add_func_btn.addActionListener(this::actionPerformed);
         funcFrame.add(add_func_btn);
+
+        JButton reset_func_btn=new JButton("Reset");
+        reset_func_btn.setActionCommand("reset");
+        reset_func_btn.addActionListener(this::actionPerformed);
+        funcFrame.add(reset_func_btn);
+
+        JButton funny_quest_btn=new JButton("Hãy chọn def đúng");
+        funny_quest_btn.setActionCommand("quest1_func");
+        funny_quest_btn.addActionListener(this::actionPerformed);
+        funcFrame.add(funny_quest_btn);
+
+        JButton funny_quest2_btn=new JButton("Hãy chọn slang đúng");
+        funny_quest2_btn.setActionCommand("quest2_func");
+        funny_quest2_btn.addActionListener(this::actionPerformed);
+        funcFrame.add(funny_quest2_btn);
+
     }
 
     public void createMainFrame()
@@ -112,6 +135,7 @@ public class GUI extends JFrame implements ActionListener {
 
         createSearchCard();
         createAddEditCard();
+        createFunnyQuestionCard();
     }
 
     public void createSearchCard()
@@ -182,6 +206,47 @@ public class GUI extends JFrame implements ActionListener {
 
     }
 
+    public void createFunnyQuestionCard()
+    {
+        JPanel questCard=new JPanel();
+        questCard.setLayout(new BoxLayout(questCard,BoxLayout.Y_AXIS));
+        questCard.setBorder(new EmptyBorder(5,5,5,5));
+        mainFrame.add(questCard,"quest");
+
+        JPanel quest_frame=new JPanel();
+        questCard.add(quest_frame);
+
+        JPanel ans_frame=new JPanel();
+        ans_frame.setLayout(new GridLayout(2,2));
+        questCard.add(ans_frame);
+
+        question = new JLabel();
+        question.setBorder(new EmptyBorder(0,0,10,0));
+        quest_frame.add(question);
+
+        ans1=new JRadioButton();
+        ans1.setBorder(new EmptyBorder(10,10,10,10));
+        ans_frame.add(ans1);
+
+        ans2=new JRadioButton();
+        ans2.setBorder(new EmptyBorder(10,10,10,10));
+        ans_frame.add(ans2);
+
+        ans3=new JRadioButton();
+        ans3.setBorder(new EmptyBorder(10,10,10,10));
+        ans_frame.add(ans3);
+
+        ans4=new JRadioButton();
+        ans4.setBorder(new EmptyBorder(10,10,10,10));
+        ans_frame.add(ans4);
+
+        group=new ButtonGroup();
+        group.add(ans1);
+        group.add(ans2);
+        group.add(ans3);
+        group.add(ans4);
+
+    }
 
     public void clearTable()
     {
@@ -237,6 +302,34 @@ public class GUI extends JFrame implements ActionListener {
             c.show(mainFrame,"add_edit_del");
         }
 
+        else if (e.getActionCommand()=="quest1_func" || e.getActionCommand()=="quest2_func")
+        {
+            group.clearSelection();
+            c.show(mainFrame,"quest");
+            ArrayList<String> strings=new ArrayList<>();
+
+            String quest="";
+
+            if (e.getActionCommand()=="quest1_func") {
+                strings = map.funnyQuestion1();
+                quest=String.format("Đâu là nghĩa của slang %s ?",strings.get(4));
+            }
+            else if (e.getActionCommand()=="quest2_func") {
+                strings = map.funnyQuestion2();
+                quest=String.format("Đâu là slang của def %s ?",strings.get(4));
+            }
+
+            if (start==0) {
+                start=System.currentTimeMillis();
+                question.setText(quest);
+                ans1.setText(strings.get(0));
+                ans2.setText(strings.get(1));
+                ans3.setText(strings.get(2));
+                ans4.setText(strings.get(3));
+            }
+
+        }
+
         else if(e.getActionCommand().equals("add"))
         {
             String new_slang=slang_field.getText();
@@ -250,7 +343,12 @@ public class GUI extends JFrame implements ActionListener {
                 return;
             }
 
-            String res=map.addSlang(new_slang,new_def);
+            String res= null;
+            try {
+                res = map.addSlang(new_slang,new_def);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             if (res.equals("Duplicate"))
             {
                 System.out.println("Duplicate");
@@ -269,7 +367,12 @@ public class GUI extends JFrame implements ActionListener {
                     }
                 }
                 else if (res2==1){
-                    map.editSlang(new_slang,new_slang,new_def);
+                    try {
+                        map.editSlang(new_slang,new_slang,new_def);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+
                     String msg=String.format("Đã ghi đè vào %s thành công",new_slang);
                     JOptionPane.showMessageDialog(null,msg,"Thành công", JOptionPane.INFORMATION_MESSAGE);
                     slang_field.setText("");
@@ -277,7 +380,11 @@ public class GUI extends JFrame implements ActionListener {
                     return;
                 }
             }
-            map.addSlang(new_slang,new_def);
+            try {
+                map.addSlang(new_slang,new_def);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             String msg=String.format("Thêm %s thành công",new_slang);
             JOptionPane.showMessageDialog(null, msg,"Thành công", JOptionPane.INFORMATION_MESSAGE);
             slang_field.setText("");
@@ -294,7 +401,12 @@ public class GUI extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null,"Vui lòng điền đầy đủ thông tin","Nhắc nhở",JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            Boolean res=map.editSlang(slang,slang,new_def);
+            Boolean res= null;
+            try {
+                res = map.editSlang(slang,slang,new_def);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
 
             if (res) {
                 String msg = String.format("Đã cập nhật %s thành công", slang);
@@ -316,18 +428,37 @@ public class GUI extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null,"Vui lòng điền đầy đủ thông tin","Nhắc nhở",JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            Boolean res=map.deleteSlang(slang);
 
-            if (res) {
-                String msg = String.format("Đã xóa %s thành công", slang);
-                JOptionPane.showMessageDialog(null, msg, "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            }
-            else
-            {
-                String msg = String.format("%s không tồn tại", slang);
-                JOptionPane.showMessageDialog(null, msg, "Lỗi", JOptionPane.ERROR_MESSAGE);
+            int res2 = JOptionPane.showConfirmDialog(null, "Bạn chắc chứ ?", "Nhắc nhở",
+                    JOptionPane.YES_NO_OPTION);
+
+            if(res2==0) {
+                Boolean res = null;
+                try {
+                    res = map.deleteSlang(slang);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                if (res) {
+                    String msg = String.format("Đã xóa %s thành công", slang);
+                    JOptionPane.showMessageDialog(null, msg, "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    String msg = String.format("%s không tồn tại", slang);
+                    JOptionPane.showMessageDialog(null, msg, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
+
+        else if (e.getActionCommand().equals("reset")) {
+            try {
+                map.reset();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+
 
     }
 }
