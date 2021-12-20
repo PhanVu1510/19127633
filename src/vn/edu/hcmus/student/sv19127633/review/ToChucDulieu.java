@@ -28,6 +28,11 @@ public class ToChucDulieu {
         return map;
     }
 
+    public HashMap<String,String> getRevMap()
+    {
+        return revMap;
+    }
+
     public void generate(String filename) throws IOException {
         try
         {
