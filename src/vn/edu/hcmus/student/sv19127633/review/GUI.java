@@ -2,6 +2,7 @@ package vn.edu.hcmus.student.sv19127633.review;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,24 +13,34 @@ import java.util.ArrayList;
 public class GUI extends JFrame implements ActionListener {
     ToChucDulieu map=new ToChucDulieu();
 
+    //Containpane
     Container pane;
+    TitledBorder mainBorder = BorderFactory.createTitledBorder("Màn hình chính");
 
-    //Search components
-    JTextField input;
-    JRadioButton bySlang;
-    JRadioButton byDef;
+    //Func Frame
 
-    //Main Components
+    //Main Frame
     CardLayout c=new CardLayout();
     JPanel mainFrame;
     JPanel searchCard;
     JPanel addCard;
 
+    //History Frame
+    String[] colNames1 = {"Slang"};
+    String [][] data1={{"Empty"}};
+    DefaultTableModel historyModel = new DefaultTableModel(data1, colNames1);
+    JTable historyTable=new JTable();
+
+
     //searchCard
-    String[] columnNames = {"Slang", "Nghĩa"};
-    String [][] data={{"Empty","Empty"}};
-    DefaultTableModel model = new DefaultTableModel(data, columnNames);
-    JTable table=new JTable();
+    JTextField input;
+    JRadioButton bySlang;
+    JRadioButton byDef;
+
+    String[] colNames2 = {"Slang", "Nghĩa"};
+    String [][] data2 = {{"Empty","Empty"}};
+    DefaultTableModel searchModel = new DefaultTableModel(data2, colNames2);
+    JTable searchTable =new JTable();
 
     //addEditCard
     JTextField slang_field;
@@ -50,47 +61,14 @@ public class GUI extends JFrame implements ActionListener {
         this.setResizable(false);
 
         pane=this.getContentPane();
-        pane.setLayout(new BorderLayout());
+        pane.setLayout(new BoxLayout(pane,BoxLayout.X_AXIS));
 
-        createSearchFrame();
-        createMainFrame();
+        //createSearchFrame();
         createFuncFrame();
+        createMainFrame();
+        //createHistoryFrame();
+
         this.pack();
-    }
-
-    public void createSearchFrame()
-    {
-        JPanel pageStart=new JPanel();
-        pageStart.setLayout(new GridLayout(2,1));
-        pageStart.setBorder(new EmptyBorder(5,5,5,5));
-        pane.add(pageStart,BorderLayout.PAGE_START);
-
-        JPanel searchFrame=new JPanel();
-        searchFrame.setLayout(new BoxLayout(searchFrame,BoxLayout.X_AXIS));
-        pageStart.add(searchFrame);
-
-        input=new JTextField();
-        input.setPreferredSize(new Dimension(150,20));
-        searchFrame.add(input);
-        JButton apply=new JButton("Tìm kiếm");
-        apply.addActionListener(this::actionPerformed);
-        apply.setActionCommand("search");
-        apply.setPreferredSize(new Dimension(100,20));
-        searchFrame.add(apply);
-
-        JPanel rdFrame=new JPanel();
-        rdFrame.setLayout(new BoxLayout(rdFrame,BoxLayout.X_AXIS));
-        pageStart.add(rdFrame);
-
-
-        bySlang=new JRadioButton("theo Slang");
-        rdFrame.add(bySlang);
-        byDef=new JRadioButton("theo Keyword");
-        rdFrame.add(byDef);
-
-        ButtonGroup rdGroup=new ButtonGroup();
-        rdGroup.add(bySlang);
-        rdGroup.add(byDef);
     }
 
     public void createFuncFrame()
@@ -98,16 +76,15 @@ public class GUI extends JFrame implements ActionListener {
         //Switch function Card
         JPanel funcFrame=new JPanel();
         funcFrame.setLayout(new GridLayout(5,1));
-        pane.add(funcFrame,BorderLayout.LINE_END);
+        pane.add(funcFrame);
 
         JButton search_func_btn=new JButton("Tìm kiếm");
-        ///search_func_btn.setPreferredSize();
-        search_func_btn.setActionCommand("search_func");
+        search_func_btn.setActionCommand("search_tab");
         search_func_btn.addActionListener(this::actionPerformed);
         funcFrame.add(search_func_btn);
 
         JButton add_func_btn=new JButton("Thêm/ Sửa/ Xóa");
-        add_func_btn.setActionCommand("add_edit_del_func");
+        add_func_btn.setActionCommand("add_edit_del_tab");
         add_func_btn.addActionListener(this::actionPerformed);
         funcFrame.add(add_func_btn);
 
@@ -132,39 +109,89 @@ public class GUI extends JFrame implements ActionListener {
     {
         mainFrame=new JPanel();
         mainFrame.setLayout(c);
-        mainFrame.setBorder(new EmptyBorder(20,20,20,20));
 
+        mainFrame.setBorder(mainBorder);
+        pane.add(mainFrame);
+
+        //createWordOfDay();
         createSearchCard();
-        createAddEditCard();
+        createAddEditDelCard();
         createFunnyQuestionCard();
     }
 
     public void createSearchCard()
     {
-        searchCard=new JPanel();
-        searchCard.setBorder(new EmptyBorder(5,5,5,5));
+        searchCard =new JPanel();
         searchCard.setLayout(new BoxLayout(searchCard,BoxLayout.Y_AXIS));
 
+        JPanel pageStart=new JPanel();
+        pageStart.setLayout(new GridLayout(2,1));
+        pageStart.setBorder(new EmptyBorder(5,5,5,5));
+        searchCard.add(pageStart);
+
+        JPanel barFrame=new JPanel();
+        barFrame.setLayout(new BoxLayout(barFrame,BoxLayout.X_AXIS));
+        pageStart.add(barFrame);
+
+        input=new JTextField();
+        input.setPreferredSize(new Dimension(150,20));
+        barFrame.add(input);
+        JButton apply=new JButton("Tìm kiếm");
+        apply.addActionListener(this::actionPerformed);
+        apply.setActionCommand("search");
+        apply.setPreferredSize(new Dimension(100,20));
+        barFrame.add(apply);
+
+        JPanel rdFrame=new JPanel();
+        rdFrame.setLayout(new BoxLayout(rdFrame,BoxLayout.X_AXIS));
+        pageStart.add(rdFrame);
+
+
+        bySlang=new JRadioButton("theo Slang");
+        rdFrame.add(bySlang);
+        byDef=new JRadioButton("theo Keyword");
+        rdFrame.add(byDef);
+
+        ButtonGroup rdGroup=new ButtonGroup();
+        rdGroup.add(bySlang);
+        rdGroup.add(byDef);
+
+        JPanel showFrame =new JPanel();
+        showFrame.setLayout(new BoxLayout(showFrame,BoxLayout.X_AXIS));
+        searchCard.add(showFrame);
+
+        JPanel searchFrame=new JPanel();
+        //searchFrame.setLayout(new BoxLayout(searchFrame,BoxLayout.Y_AXIS));
+        showFrame.add(searchFrame);
+
         JLabel result=new JLabel("Kết quả");
-        result.setBorder(new EmptyBorder(0,0,10,0));
-        result.setAlignmentX(Component.CENTER_ALIGNMENT);
-        searchCard.add(result);
+        searchFrame.add(result);
 
-        table=new JTable(model);
-        table.getColumnModel().getColumn(0).setPreferredWidth(100);
-        table.getColumnModel().getColumn(1).setPreferredWidth(250);
-        searchCard.add(table);
+        searchTable =new JTable(searchModel);
+        searchTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+        searchTable.getColumnModel().getColumn(1).setPreferredWidth(200);
+        searchFrame.add(searchTable);
 
-        mainFrame.add(searchCard,"search");
-        pane.add(mainFrame,BorderLayout.CENTER);
+        mainFrame.add(searchCard,"search_card");
+
+        JPanel historyFrame=new JPanel();
+        showFrame.add(historyFrame);
+
+        JLabel hist=new JLabel("Lịch sử");
+        historyFrame.add(hist);
+
+        historyTable=new JTable(historyModel);
+        historyTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+
+        historyFrame.add(historyTable);
     }
 
-    public void createAddEditCard()
+    public void createAddEditDelCard()
     {
         addCard=new JPanel();
         addCard.setBorder(new EmptyBorder(5,5,5,5));
         addCard.setLayout(new BoxLayout(addCard,BoxLayout.Y_AXIS));
-        mainFrame.add(addCard,"add_edit_del");
+        mainFrame.add(addCard,"add_edit_del_card");
 
         JPanel new_slang_frame=new JPanel();
         new_slang_frame.setLayout(new FlowLayout());
@@ -257,35 +284,68 @@ public class GUI extends JFrame implements ActionListener {
 
     }
 
-    public void clearTable()
+    public void searchTableClear()
     {
-        int totalRow=table.getRowCount();
+        int totalRow= searchTable.getRowCount();
         for(int i=0;i<totalRow;i++)
-            model.removeRow(i);
+            searchModel.removeRow(i);
+    }
+
+    public void histTableClear()
+    {
+        int totalRow= historyTable.getRowCount();
+        for(int i=0;i<totalRow;i++)
+            historyModel.removeRow(i);
+    }
+
+    public void updateHistory()
+    {
+        ArrayList<String>hist=map.getHistory();
+        int size=hist.size();
+        //histTableClear();
+        for (int i=0;i<size;i++)
+            historyModel.addRow(new String[]{hist.get(i)});
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("search"))
+        if (e.getActionCommand().equals("search_tab"))
+        {
+            mainBorder.setTitle("Tìm kiếm");
+            repaint();
+            c.show(mainFrame,"search_card");
+
+        }
+
+        else if (e.getActionCommand()=="add_edit_del_tab")
+        {
+            mainBorder.setTitle("Thay đổi dữ liệu");
+            repaint();
+            c.show(mainFrame,"add_edit_del_card");
+        }
+
+        else if (e.getActionCommand().equals("search"))
         {
             if (bySlang.isSelected())
             {
                 String slang=input.getText();
                 if (slang.equals(""))
                     return;
-                clearTable();
+                searchTableClear();
                 String def=map.findDef(slang);
-                if (def !=null)
-                    model.addRow(new String[]{slang,def});
+                if (def !=null) {
+                    searchModel.addRow(new String[]{slang, def});
+                    updateHistory();
+                }
                 else
-                    model.addRow(new String[]{"Empty","Empty"});
+                    searchModel.addRow(new String[]{"Empty","Empty"});
             }
 
             else {
                 String def=input.getText();
                 if (def.equals(""))
                     return;
-                clearTable();
+                searchTableClear();
 
                 ArrayList<String> slangs=map.findSlang(def);
 
@@ -294,49 +354,12 @@ public class GUI extends JFrame implements ActionListener {
                 if (totalRow>0) {
                     for (int i=0;i<totalRow;i++) {
                         String slang=slangs.get(i);
-                        model.addRow(new String[]{slang,map.findDef(slang)});
+                        searchModel.addRow(new String[]{slang,map.findDef(slang)});
                     }
                 }
                 else
-                    model.addRow(new String[]{"Empty","Empty"});
+                    searchModel.addRow(new String[]{"Empty","Empty"});
             }
-        }
-        else if (e.getActionCommand().equals("search_func"))
-        {
-            c.show(mainFrame,"search");
-        }
-
-        else if (e.getActionCommand()=="add_edit_del_func")
-        {
-            c.show(mainFrame,"add_edit_del");
-        }
-
-        else if (e.getActionCommand()=="quest1_func" || e.getActionCommand()=="quest2_func")
-        {
-            group.clearSelection();
-            c.show(mainFrame,"quest");
-            ArrayList<String> strings=new ArrayList<>();
-
-            String quest="";
-
-            if (e.getActionCommand()=="quest1_func") {
-                strings = map.funnyQuestion1();
-                result=map.getMap().get(strings.get(4));
-                quest=String.format("Đâu là nghĩa của slang %s ?",strings.get(4));
-            }
-            else if (e.getActionCommand()=="quest2_func") {
-                strings = map.funnyQuestion2();
-                result=map.getRevMap().get(strings.get(4));
-                quest=String.format("Đâu là slang của def %s ?",strings.get(4));
-            }
-
-
-                start=System.currentTimeMillis();
-                question.setText(quest);
-                ans1.setText(strings.get(0));
-                ans2.setText(strings.get(1));
-                ans3.setText(strings.get(2));
-                ans4.setText(strings.get(3));
 
         }
 
@@ -389,6 +412,8 @@ public class GUI extends JFrame implements ActionListener {
                     def_field.setText("");
                     return;
                 }
+                else
+                    return;
             }
             try {
                 map.addSlang(new_slang,new_def);
@@ -458,6 +483,33 @@ public class GUI extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(null, msg, "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
             }
+        }
+
+        else if (e.getActionCommand()=="quest1_func" || e.getActionCommand()=="quest2_func")
+        {
+            group.clearSelection();
+            c.show(mainFrame,"quest");
+            ArrayList<String> strings=new ArrayList<>();
+
+            String quest="";
+
+            if (e.getActionCommand()=="quest1_func") {
+                strings = map.funnyQuestion1();
+                result=map.getMap().get(strings.get(4));
+                quest=String.format("Đâu là nghĩa của slang %s ?",strings.get(4));
+            }
+            else if (e.getActionCommand()=="quest2_func") {
+                strings = map.funnyQuestion2();
+                result=map.getRevMap().get(strings.get(4));
+                quest=String.format("Đâu là slang của def %s ?",strings.get(4));
+            }
+                start=System.currentTimeMillis();
+                question.setText(quest);
+                ans1.setText(strings.get(0));
+                ans2.setText(strings.get(1));
+                ans3.setText(strings.get(2));
+                ans4.setText(strings.get(3));
+
         }
 
         else if (e.getActionCommand().equals("reset")) {

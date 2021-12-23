@@ -27,6 +27,8 @@ public class ToChucDulieu {
         return revMap;
     }
 
+    public ArrayList<String> getHistory(){return history;}
+
     public boolean generate(String filename) throws IOException {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
@@ -101,6 +103,7 @@ public class ToChucDulieu {
             });
         }
     }
+
     public String findDef(String slang)
     {
         history.add(slang);
@@ -183,16 +186,6 @@ public class ToChucDulieu {
         save("latest_slang.txt");
     }
 
-    public String randSlang()
-    {
-        return (String)map.keySet().stream().toArray()[rd.nextInt(map.size()-1)];
-    }
-
-    public String randDef()
-    {
-        return map.get(randSlang());
-    }
-
     public String addDefWithoutDuplicate(ArrayList<String> strings)
     {
         while (true)
@@ -221,6 +214,16 @@ public class ToChucDulieu {
                     return def;
             }
         }
+    }
+
+    public String randSlang()
+    {
+        return (String)map.keySet().stream().toArray()[rd.nextInt(map.size()-1)];
+    }
+
+    public String randDef()
+    {
+        return map.get(randSlang());
     }
 
     public ArrayList<String> funnyQuestion1()
