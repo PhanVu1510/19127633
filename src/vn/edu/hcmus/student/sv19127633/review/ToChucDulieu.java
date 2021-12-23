@@ -1,6 +1,8 @@
 package vn.edu.hcmus.student.sv19127633.review;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ToChucDulieu {
@@ -8,12 +10,14 @@ public class ToChucDulieu {
 
     private HashMap<String, String> map=new HashMap<>();
     private HashMap<String, String> revMap=new HashMap<>();
+    private String word;
 
     public ToChucDulieu() throws IOException {
         boolean check=generate("latest_slang.txt");
         System.out.println(check);
         if (check == false)
             generate("slang.txt");
+        wordOfDay();
     }
 
     public HashMap<String,String> getMap()
@@ -25,6 +29,9 @@ public class ToChucDulieu {
     {
         return revMap;
     }
+
+    public String getWord(){return word;}
+
 
     public boolean generate(String filename) throws IOException {
         try {
@@ -219,6 +226,33 @@ public class ToChucDulieu {
     public String randDef()
     {
         return map.get(randSlang());
+    }
+
+    public void wordOfDay() throws IOException {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd");
+        LocalDateTime now = LocalDateTime.now();
+        String day=dtf.format(now);
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("wordOfDay.txt")));
+            String dayInFile=in.readLine();
+            if (!dayInFile.equals(day))
+            {
+                BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream("wordOfDay.txt")));
+                out.write(day+"\n");
+                out.write(randSlang());
+                out.close();
+            }
+            word=in.readLine();
+            in.close();
+        }
+        catch (IOException e) {
+            BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream("wordOfDay.txt")));
+            out.write(day+"\n");
+            word=randSlang();
+            out.write(word);
+            out.close();
+        }
+
     }
 
     public ArrayList<String> funnyQuestion1()

@@ -24,6 +24,7 @@ public class GUI extends JFrame implements ActionListener {
     JPanel mainFrame;
     JPanel searchCard;
     JPanel addCard;
+    JPanel wordOfDayCard;
 
 
     //searchCard
@@ -52,8 +53,12 @@ public class GUI extends JFrame implements ActionListener {
     JRadioButton ans1,ans2,ans3,ans4;
     String result="";
     ButtonGroup group;
-    long start = 0;
-    long end = 0;
+
+    //wordOfDayCard
+
+
+
+
 
     public GUI() throws IOException {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -75,8 +80,13 @@ public class GUI extends JFrame implements ActionListener {
     {
         //Switch function Card
         JPanel funcFrame=new JPanel();
-        funcFrame.setLayout(new GridLayout(5,1));
+        funcFrame.setLayout(new GridLayout(6,1));
         pane.add(funcFrame);
+
+        JButton word_func_btn=new JButton("Từ vựng hôm nay");
+        word_func_btn.setActionCommand("wordOfDay_tab");
+        word_func_btn.addActionListener(this::actionPerformed);
+        funcFrame.add(word_func_btn);
 
         JButton search_func_btn=new JButton("Tìm kiếm");
         search_func_btn.setActionCommand("search_tab");
@@ -113,7 +123,7 @@ public class GUI extends JFrame implements ActionListener {
         mainFrame.setBorder(mainBorder);
         pane.add(mainFrame);
 
-        //createWordOfDay();
+        createWordOfDayCard();
         createSearchCard();
         createAddEditDelCard();
         createFunnyQuestionCard();
@@ -193,6 +203,18 @@ public class GUI extends JFrame implements ActionListener {
         histScroll.setVisible(true);
         historyFrame.add(histScroll);
 
+    }
+
+    public void createWordOfDayCard()
+    {
+        wordOfDayCard=new JPanel();
+        JLabel word_lb=new JLabel("Từ vựng: " + map.getWord());
+        JLabel def_lb=new JLabel("Nghĩa: " + map.getMap().get(map.getWord()));
+
+        wordOfDayCard.add(word_lb);
+        wordOfDayCard.add(def_lb);
+
+        mainFrame.add(wordOfDayCard,"wordOfDay_card");
     }
 
     public void createAddEditDelCard()
@@ -314,7 +336,7 @@ public class GUI extends JFrame implements ActionListener {
             result=map.getRevMap().get(strings.get(4));
             quest=String.format("Đâu là slang của def %s ?",strings.get(4));
         }*/
-        start = System.currentTimeMillis();
+
         question.setText(quest);
         ans1.setText(strings.get(0));
         ans2.setText(strings.get(1));
@@ -337,6 +359,12 @@ public class GUI extends JFrame implements ActionListener {
             mainBorder.setTitle("Thay đổi dữ liệu");
             repaint();
             c.show(mainFrame,"add_edit_del_card");
+        }
+
+        else if (e.getActionCommand()=="wordOfDay_tab"){
+            mainBorder.setTitle("Từ vựng hôm nay");
+            repaint();
+            c.show(mainFrame,"wordOfDay_card");
         }
 
         else if (e.getActionCommand().equals("search"))
@@ -508,6 +536,8 @@ public class GUI extends JFrame implements ActionListener {
                 }
             }
         }
+
+
 
         else if (e.getActionCommand()=="quest1_func")
         {
