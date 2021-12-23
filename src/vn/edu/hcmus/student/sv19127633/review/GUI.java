@@ -25,12 +25,6 @@ public class GUI extends JFrame implements ActionListener {
     JPanel searchCard;
     JPanel addCard;
 
-    //History Frame
-    String[] colNames1 = {"Slang"};
-    String [][] data1={{"Empty"}};
-    DefaultTableModel historyModel = new DefaultTableModel(data1, colNames1);
-    JTable historyTable=new JTable();
-
 
     //searchCard
     JTextField input;
@@ -41,6 +35,12 @@ public class GUI extends JFrame implements ActionListener {
     String [][] data2 = {{"Empty","Empty"}};
     DefaultTableModel searchModel = new DefaultTableModel(data2, colNames2);
     JTable searchTable =new JTable();
+
+    String[] colNames1 = {"Tìm","Loại"};
+    String [][] data1={{"Empty","Empty"}};
+    DefaultTableModel historyModel = new DefaultTableModel(data1, colNames1);
+    JTable historyTable=new JTable();
+
 
     //addEditCard
     JTextField slang_field;
@@ -161,16 +161,20 @@ public class GUI extends JFrame implements ActionListener {
         searchCard.add(showFrame);
 
         JPanel searchFrame=new JPanel();
-        //searchFrame.setLayout(new BoxLayout(searchFrame,BoxLayout.Y_AXIS));
         showFrame.add(searchFrame);
 
         JLabel result=new JLabel("Kết quả");
         searchFrame.add(result);
 
         searchTable =new JTable(searchModel);
-        searchTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-        searchTable.getColumnModel().getColumn(1).setPreferredWidth(200);
+        searchTable.setPreferredScrollableViewportSize(new Dimension(450,60));
+        searchTable.setFillsViewportHeight(true);
+
         searchFrame.add(searchTable);
+
+        JScrollPane searchScroll=new JScrollPane(searchTable);
+        searchScroll.setVisible(true);
+        searchFrame.add(searchScroll);
 
         mainFrame.add(searchCard,"search_card");
 
@@ -181,9 +185,14 @@ public class GUI extends JFrame implements ActionListener {
         historyFrame.add(hist);
 
         historyTable=new JTable(historyModel);
-        historyTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-
+        historyTable.setPreferredScrollableViewportSize(new Dimension(200,60));
+        historyTable.setFillsViewportHeight(true);
         historyFrame.add(historyTable);
+
+        JScrollPane histScroll=new JScrollPane(historyTable);
+        histScroll.setVisible(true);
+        historyFrame.add(histScroll);
+
     }
 
     public void createAddEditDelCard()
@@ -231,7 +240,6 @@ public class GUI extends JFrame implements ActionListener {
         del_btn.addActionListener(this::actionPerformed);
         del_btn.setActionCommand("del");
         add_new_frame.add((del_btn));
-
     }
 
     public void createFunnyQuestionCard()
@@ -284,27 +292,34 @@ public class GUI extends JFrame implements ActionListener {
 
     }
 
-    public void searchTableClear()
+    public void clearTable()
     {
-        int totalRow= searchTable.getRowCount();
-        for(int i=0;i<totalRow;i++)
-            searchModel.removeRow(i);
+        while (searchModel.getRowCount()>0)
+            searchModel.removeRow(0);
     }
 
-    public void histTableClear()
-    {
-        int totalRow= historyTable.getRowCount();
-        for(int i=0;i<totalRow;i++)
-            historyModel.removeRow(i);
-    }
+    public void GenerateQuestion1() {
+        group.clearSelection();
+        c.show(mainFrame, "quest");
+        ArrayList<String> strings = new ArrayList<>();
 
-    public void updateHistory()
-    {
-        ArrayList<String>hist=map.getHistory();
-        int size=hist.size();
-        //histTableClear();
-        for (int i=0;i<size;i++)
-            historyModel.addRow(new String[]{hist.get(i)});
+        String quest = "";
+
+        strings = map.funnyQuestion1();
+        result = map.getMap().get(strings.get(4));
+        quest = String.format("Đâu là nghĩa của slang %s ?", strings.get(4));
+
+/*        else if (e.getActionCommand()=="quest2_func") {
+            strings = map.funnyQuestion2();
+            result=map.getRevMap().get(strings.get(4));
+            quest=String.format("Đâu là slang của def %s ?",strings.get(4));
+        }*/
+        start = System.currentTimeMillis();
+        question.setText(quest);
+        ans1.setText(strings.get(0));
+        ans2.setText(strings.get(1));
+        ans3.setText(strings.get(2));
+        ans4.setText(strings.get(3));
     }
 
     @Override
@@ -331,11 +346,14 @@ public class GUI extends JFrame implements ActionListener {
                 String slang=input.getText();
                 if (slang.equals(""))
                     return;
-                searchTableClear();
+                clearTable();
                 String def=map.findDef(slang);
                 if (def !=null) {
                     searchModel.addRow(new String[]{slang, def});
-                    updateHistory();
+                    if (historyModel.getValueAt(0,0)=="Empty")
+                        historyModel.setValueAt(slang,0,0);
+                    else
+                        historyModel.addRow(new String[]{slang,"FindDef"});
                 }
                 else
                     searchModel.addRow(new String[]{"Empty","Empty"});
@@ -345,20 +363,26 @@ public class GUI extends JFrame implements ActionListener {
                 String def=input.getText();
                 if (def.equals(""))
                     return;
-                //searchTableClear();
-
+                clearTable();
                 ArrayList<String> slangs=map.findSlang(def);
-
                 int totalRow=slangs.size();
-
                 if (totalRow>0) {
                     for (int i=0;i<totalRow;i++) {
                         String slang=slangs.get(i);
-                        searchModel.addRow(new String[]{map.findDef(slang),slang});
+                        searchModel.addRow(new String[]{slang,map.findDef(slang)});
+                    }
+                    if (historyModel.getValueAt(0,0)=="Empty") {
+                        historyModel.setValueAt(def, 0, 0);
+                        historyModel.setValueAt("FindSlang", 0, 1);
+                    }
+                    else {
+                        historyModel.setValueAt(def, 0, 0);
+                        historyModel.setValueAt("FindSlang", 0, 1);
                     }
                 }
-                else
-                    searchModel.addRow(new String[]{"Empty","Empty"});
+                else {
+                    searchModel.addRow(new String[]{"Empty", "Empty"});
+                }
             }
 
         }
@@ -485,31 +509,9 @@ public class GUI extends JFrame implements ActionListener {
             }
         }
 
-        else if (e.getActionCommand()=="quest1_func" || e.getActionCommand()=="quest2_func")
+        else if (e.getActionCommand()=="quest1_func")
         {
-            group.clearSelection();
-            c.show(mainFrame,"quest");
-            ArrayList<String> strings=new ArrayList<>();
-
-            String quest="";
-
-            if (e.getActionCommand()=="quest1_func") {
-                strings = map.funnyQuestion1();
-                result=map.getMap().get(strings.get(4));
-                quest=String.format("Đâu là nghĩa của slang %s ?",strings.get(4));
-            }
-            else if (e.getActionCommand()=="quest2_func") {
-                strings = map.funnyQuestion2();
-                result=map.getRevMap().get(strings.get(4));
-                quest=String.format("Đâu là slang của def %s ?",strings.get(4));
-            }
-                start=System.currentTimeMillis();
-                question.setText(quest);
-                ans1.setText(strings.get(0));
-                ans2.setText(strings.get(1));
-                ans3.setText(strings.get(2));
-                ans4.setText(strings.get(3));
-
+            GenerateQuestion1();
         }
 
         else if (e.getActionCommand().equals("reset")) {
@@ -534,6 +536,7 @@ public class GUI extends JFrame implements ActionListener {
             else
             {
                 JOptionPane.showMessageDialog(null,"Đáp án chính xác","Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
+                GenerateQuestion1();
             }
         }
 
@@ -549,6 +552,7 @@ public class GUI extends JFrame implements ActionListener {
             else
             {
                 JOptionPane.showMessageDialog(null,"Đáp án chính xác","Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
+                GenerateQuestion1();
             }
         }
 
@@ -564,6 +568,7 @@ public class GUI extends JFrame implements ActionListener {
             else
             {
                 JOptionPane.showMessageDialog(null,"Đáp án chính xác","Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
+                GenerateQuestion1();
             }
         }
 
@@ -579,6 +584,7 @@ public class GUI extends JFrame implements ActionListener {
             else
             {
                 JOptionPane.showMessageDialog(null,"Đáp án chính xác","Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
+                GenerateQuestion1();
             }
         }
 

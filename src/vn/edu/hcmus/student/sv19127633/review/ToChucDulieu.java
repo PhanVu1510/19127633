@@ -8,7 +8,6 @@ public class ToChucDulieu {
 
     private HashMap<String, String> map=new HashMap<>();
     private HashMap<String, String> revMap=new HashMap<>();
-    private ArrayList<String> history=new ArrayList<>();
 
     public ToChucDulieu() throws IOException {
         boolean check=generate("latest_slang.txt");
@@ -26,8 +25,6 @@ public class ToChucDulieu {
     {
         return revMap;
     }
-
-    public ArrayList<String> getHistory(){return history;}
 
     public boolean generate(String filename) throws IOException {
         try {
@@ -106,7 +103,6 @@ public class ToChucDulieu {
 
     public String findDef(String slang)
     {
-        history.add(slang);
         return map.get(slang);
     }
 
@@ -127,8 +123,7 @@ public class ToChucDulieu {
             {
                 for (int j=0;j<splitKey.length;j++)
                 {
-                    if (splitDef[i].equals(splitKey[j])) {
-
+                    if (splitDef[i].toLowerCase().equals(splitKey[j].toLowerCase())) {
                         count++;
                         break;
                     }
@@ -136,7 +131,6 @@ public class ToChucDulieu {
             }
             if (count==splitDef.length)
                 list.add(key);
-
         });
         return list;
     }
@@ -147,7 +141,6 @@ public class ToChucDulieu {
         else {
             map.put(slang, def);
             revMap.put(def,slang);
-            history.add(slang);
             save("latest_slang.txt");
         }
         return "Successful";
@@ -161,7 +154,6 @@ public class ToChucDulieu {
             map.put(newSlang,newDef);
             revMap.remove(map.get(oldSlang));
             revMap.put(newDef,newSlang);
-            history.add(newSlang);
             save("latest_slang.txt");
             return true;
         }
@@ -176,7 +168,6 @@ public class ToChucDulieu {
             //confirm
             map.remove(slang);
             revMap.remove(map.get(slang));
-            history.add(slang);
             save("latest_slang.txt");
             return true;
         }
