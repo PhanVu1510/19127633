@@ -119,20 +119,24 @@ public class ToChucDulieu {
 
         keys.forEach((key) ->
         {
-            String tempDef=map.get(key);
-            boolean flag=false;
+            String temp=map.get(key);
+            String[] splitKey=temp.split(" ");
+            int count=0;
+
             for (int i=0;i<splitDef.length;i++)
             {
-                if(tempDef.indexOf(splitDef[i])!=-1)
-                    flag = true;
-                if (flag==false)
-                    break;
-                flag=false;
-                if(i==splitDef.length-1) {
-                    list.add(key);
-                    history.add(key);
+                for (int j=0;j<splitKey.length;j++)
+                {
+                    if (splitDef[i].equals(splitKey[j])) {
+
+                        count++;
+                        break;
+                    }
                 }
             }
+            if (count==splitDef.length)
+                list.add(key);
+
         });
         return list;
     }

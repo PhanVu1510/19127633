@@ -345,7 +345,7 @@ public class GUI extends JFrame implements ActionListener {
                 String def=input.getText();
                 if (def.equals(""))
                     return;
-                searchTableClear();
+                //searchTableClear();
 
                 ArrayList<String> slangs=map.findSlang(def);
 
@@ -354,7 +354,7 @@ public class GUI extends JFrame implements ActionListener {
                 if (totalRow>0) {
                     for (int i=0;i<totalRow;i++) {
                         String slang=slangs.get(i);
-                        searchModel.addRow(new String[]{slang,map.findDef(slang)});
+                        searchModel.addRow(new String[]{map.findDef(slang),slang});
                     }
                 }
                 else
@@ -581,9 +581,6 @@ public class GUI extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null,"Đáp án chính xác","Chúc mừng", JOptionPane.INFORMATION_MESSAGE);
             }
         }
-
-
-
 
     }
 }
