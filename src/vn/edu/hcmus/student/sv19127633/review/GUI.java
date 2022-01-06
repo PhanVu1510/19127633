@@ -383,13 +383,13 @@ public class GUI extends JFrame implements ActionListener {
                 if (slang.equals(""))
                     return;
                 clearTable();
-                String def=map.findDef(slang);
-                if (def !=null) {
-                    searchModel.addRow(new String[]{slang, def});
-                    if (historyModel.getValueAt(0,0)=="Empty")
-                        historyModel.setValueAt(slang,0,0);
-                    else
-                        historyModel.addRow(new String[]{slang,"FindDef"});
+                ArrayList<String> slangs=map.findDef(slang);
+                if (slangs.size()>0) {
+                    for (int i=0;i<slangs.size();i++)
+                    {
+                        searchModel.addRow(new String[]{slangs.get(i), map.getMap().get(slangs.get(i))});
+                        historyModel.addRow(new String[]{slangs.get(i),"FindDef"});
+                    }
                 }
                 else
                     searchModel.addRow(new String[]{"Empty","Empty"});
@@ -405,7 +405,7 @@ public class GUI extends JFrame implements ActionListener {
                 if (totalRow>0) {
                     for (int i=0;i<totalRow;i++) {
                         String slang=slangs.get(i);
-                        searchModel.addRow(new String[]{slang,map.findDef(slang)});
+                        searchModel.addRow(new String[]{slang,map.getMap().get(slang)});
                     }
                     if (historyModel.getValueAt(0,0)=="Empty") {
                         historyModel.setValueAt(def, 0, 0);

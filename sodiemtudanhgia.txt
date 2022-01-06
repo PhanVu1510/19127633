@@ -1,0 +1,19 @@
+Tìm kiếm theo slang word: 10 điểm
+Tìm kiếm theo definition: 10 điểm
+hiển thị story: 10 điểm
+add 1 slang word: 10 điểm
+edit 1 slang word: 10 điểm
+delete 1 slang word: 10 điểm
+reset danh sách slang word: 10 điểm
+On this day slang word: 10 điểm
+đố vui theo slang word: 10 điẻm
+đố vui theo definitions: 10 điểm
+
+Tham khảo: Lý thuyết về các messagebox chứ em không
+copy code
+Link video: https://youtu.be/aGmRpHM_6UE
+Link Github: https://github.com/PhanVu1510/19127633
+
+
+
+

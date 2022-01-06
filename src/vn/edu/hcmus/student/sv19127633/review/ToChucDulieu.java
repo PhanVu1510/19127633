@@ -86,9 +86,16 @@ public class ToChucDulieu {
         out.close();
     }
 
-    public String findDef(String slang)
+    public ArrayList<String> findDef(String slang)
     {
-        return map.get(slang);
+        ArrayList<String> list=new ArrayList<>();
+        Set<String>keys=map.keySet();
+        for (String key:keys)
+        {
+            if (key.toLowerCase().startsWith(slang.toLowerCase()))
+                list.add(key);
+        }
+        return list;
     }
 
     public ArrayList<String> findSlang(String def)
