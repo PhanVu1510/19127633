@@ -54,10 +54,6 @@ public class GUI extends JFrame implements ActionListener {
     String result="";
     ButtonGroup group;
 
-    //wordOfDayCard
-
-
-
 
 
     public GUI() throws IOException {
@@ -331,11 +327,23 @@ public class GUI extends JFrame implements ActionListener {
         result = map.getMap().get(strings.get(4));
         quest = String.format("Đâu là nghĩa của slang %s ?", strings.get(4));
 
-/*        else if (e.getActionCommand()=="quest2_func") {
-            strings = map.funnyQuestion2();
-            result=map.getRevMap().get(strings.get(4));
-            quest=String.format("Đâu là slang của def %s ?",strings.get(4));
-        }*/
+        question.setText(quest);
+        ans1.setText(strings.get(0));
+        ans2.setText(strings.get(1));
+        ans3.setText(strings.get(2));
+        ans4.setText(strings.get(3));
+    }
+
+    public void GenerateQuestion2() {
+        group.clearSelection();
+        c.show(mainFrame, "quest");
+        ArrayList<String> strings = new ArrayList<>();
+
+        String quest = "";
+
+        strings = map.funnyQuestion2();
+        result=map.getRevMap().get(strings.get(4));
+        quest=String.format("Đâu là slang của def %s ?",strings.get(4));
 
         question.setText(quest);
         ans1.setText(strings.get(0));
@@ -537,11 +545,14 @@ public class GUI extends JFrame implements ActionListener {
             }
         }
 
-
-
         else if (e.getActionCommand()=="quest1_func")
         {
             GenerateQuestion1();
+        }
+
+        else if (e.getActionCommand()=="quest2_func")
+        {
+            GenerateQuestion2();
         }
 
         else if (e.getActionCommand().equals("reset")) {

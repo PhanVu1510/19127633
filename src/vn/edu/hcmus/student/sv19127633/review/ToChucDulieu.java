@@ -32,7 +32,6 @@ public class ToChucDulieu {
 
     public String getWord(){return word;}
 
-
     public boolean generate(String filename) throws IOException {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
@@ -85,27 +84,6 @@ public class ToChucDulieu {
             }
         });
         out.close();
-    }
-
-    public void show(boolean rev)
-    {
-        if (!rev) {
-            Set<String> keys = map.keySet();
-
-            keys.forEach((key) ->
-            {
-                System.out.println("Key: " + key + " Value: " + map.get(key));
-            });
-        }
-        else
-        {
-            Set<String> keys = revMap.keySet();
-
-            keys.forEach((key) ->
-            {
-                System.out.println("Key: " + key + " Value: " + revMap.get(key));
-            });
-        }
     }
 
     public String findDef(String slang)
